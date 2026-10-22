@@ -38,8 +38,9 @@ install it directly through the in-game mod portal.
 8. Add a `FACTORIO_API_KEY` secret in the repo's
    Settings -> Secrets and variables -> Actions (create the key at
    factorio.com/profile).
-9. Submit the very first release to the mod portal manually; the Upload API
-   cannot create a new mod listing.
+9. The `FACTORIO_API_KEY` needs the "ModPortal: Upload Mods" usage and, so the
+   very first release can create the mod listing, also "ModPortal: Publish
+   Mods" (both are chosen when creating the key on factorio.com/profile).
 
 ### Dependencies cheat sheet
 
@@ -178,6 +179,25 @@ the latest GitHub Release that is not marked as a pre-release (so internal
 versions are skipped).
 
 That workflow downloads the chosen release's zip and publishes it to the
-Factorio Mod Portal via the official
-[Mod Upload API](https://wiki.factorio.com/Mod_upload_API). Nothing ever
-reaches the live mod portal without this manual step.
+Factorio Mod Portal. Nothing ever reaches the live mod portal without this
+manual step.
+
+It works in two steps:
+
+1. **The easy way:** add a release to the existing mod through the
+   [Mod upload API](https://wiki.factorio.com/Mod_upload_API).
+2. **If the mod does not exist on the portal yet** (the portal answers
+   `UnknownMod`), publish it as a **new mod** through the
+   [Mod publish API](https://wiki.factorio.com/Mod_publish_API). Only that
+   one specific answer triggers this, so a bad key or a version that already
+   exists never creates a listing by accident. The checkbox
+   `new_mod_fallback` in the Run workflow form (on by default) turns this step
+   off. A workflow cannot ask a question halfway through, so that form is the
+   prompt: the click on **Run workflow** is the confirmation.
+
+For a new mod the form also takes an optional `category`, `license` and
+`source_url` (default: this repository). The portal description is the
+contents of `portal-description.md` in the repo root if that file exists (it
+is not packaged into the mod), otherwise the `description` from `info.json`.
+Title, tags, FAQ and images can be finished on the mod's portal page
+afterwards.
